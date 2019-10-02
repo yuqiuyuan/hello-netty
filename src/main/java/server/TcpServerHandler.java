@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import util.ConvertCode;
 
 /**
  * @ClassName TcpServerHandler
@@ -15,20 +16,35 @@ import io.netty.channel.SimpleChannelInboundHandler;
  **/
 public class TcpServerHandler extends SimpleChannelInboundHandler<Object> {
 
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+    }
+
     /**
      * 从客户端接收到的消息
      * 服务器向指定客户端发送消息，只需要通过'map'将客户端的'id'和'channel'存起来
      * 在需要的时候通过'writeAndFlush'方法发送即可
      *
-     * @param channelHandlerContext
+     * @param channel
      * @param msg
      * @throws Exception
      */
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object msg) throws Exception {
-        ByteBuf m = (ByteBuf) msg;
-        System.out.println(ByteBufUtil.hexDump(m));
-        System.out.println(m.readByte());
+    protected void channelRead0(ChannelHandlerContext channel, Object msg) throws Exception {
+        try {
+            ByteBuf buf = (ByteBuf) msg;
+            byte[] bytes = new byte[buf.readableBytes()];
+            //复制内容到字节数组bytes
+            buf.readBytes(bytes);
+            //将接收到的数据转为字符串，此字符串就是客户端发送的字符串
+            java.lang.String s = ConvertCode.receiveHexToString(bytes);
+            //返回16进制到客户端
+//            writeToClient(receiveStr,channel,"测试");
+            System.out.println(s);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
