@@ -19,7 +19,7 @@ public class DemoClient {
         try {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class).handler(new MyClientInitializer());
-            ChannelFuture channelFuture = bootstrap.connect("localhost", 8899).sync();
+            ChannelFuture channelFuture = bootstrap.connect("localhost", 12340).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -2,6 +2,7 @@ package server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -12,6 +13,8 @@ import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.codec.serialization.ClassResolver;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
+import warehouse.WarehouseService;
+import warehouse.impl.WarehouseServiceImpl;
 
 /**
  * @ClassName TcpServer
@@ -48,6 +51,13 @@ public class TcpServer {
         });
         b.bind(IP, PORT).sync();
         System.out.println("TCP服务器已启动");
+        WarehouseService warehouseService = new WarehouseServiceImpl();
+        while (true) {
+            if (warehouseService.getSize() > 0) {
+                warehouseService.send("1", "6810231321318932492094114");
+            }
+            Thread.sleep(1000L);
+        }
     }
 
     protected static void shutdown() {

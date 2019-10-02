@@ -1,7 +1,9 @@
 package client;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import util.ConvertCode;
 
 import java.time.LocalDateTime;
 
@@ -12,18 +14,28 @@ import java.time.LocalDateTime;
  * @Date 2019-09-30 1:49 PM
  * @Version 1.0
  **/
-public class MyClientHandler extends SimpleChannelInboundHandler<String> {
+public class MyClientHandler extends SimpleChannelInboundHandler<Object> {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-        System.out.println(ctx.channel().remoteAddress());
-        System.out.println("client output: " + String.valueOf(msg));
-        ctx.writeAndFlush("from client: " + LocalDateTime.now());
+    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+        ByteBuf m = (ByteBuf) msg;
+        byte[] b = new byte[m.readableBytes()];
+        m.readBytes(b);
+        System.out.println("server output: " + ConvertCode.receiveHexToString(b));
+//        ctx.writeAndFlush("from client: " + LocalDateTime.now());
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        ctx.writeAndFlush("来自客户端的问候～！");
+        String massage = "680101000000220819200000";
+        String s = ConvertCode.hexString2String(massage);
+        ctx.writeAndFlush(s);
+        massage = "68010100000022081920";
+        s = ConvertCode.hexString2String(massage);
+        ctx.writeAndFlush(s);
+        massage = "6801010000002208";
+        s = ConvertCode.hexString2String(massage);
+        ctx.writeAndFlush(s);
     }
 
     @Override

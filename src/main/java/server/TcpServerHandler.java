@@ -6,6 +6,8 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import util.ConvertCode;
+import warehouse.WarehouseService;
+import warehouse.impl.WarehouseServiceImpl;
 
 /**
  * @ClassName TcpServerHandler
@@ -15,6 +17,7 @@ import util.ConvertCode;
  * @Version 1.0
  **/
 public class TcpServerHandler extends SimpleChannelInboundHandler<Object> {
+    WarehouseService warehouseService = new WarehouseServiceImpl();
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -41,6 +44,8 @@ public class TcpServerHandler extends SimpleChannelInboundHandler<Object> {
             java.lang.String s = ConvertCode.receiveHexToString(bytes);
             //返回16进制到客户端
 //            writeToClient(receiveStr,channel,"测试");
+            WarehouseService warehouseService = new WarehouseServiceImpl();
+            warehouseService.add("1", channel);
             System.out.println(s);
         } catch (Exception e) {
             e.printStackTrace();
@@ -51,4 +56,13 @@ public class TcpServerHandler extends SimpleChannelInboundHandler<Object> {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         ctx.close();
     }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        //删除Channel Map中的失效Client
+        warehouseService.del("1");
+        ctx.close();
+    }
+
+
 }
