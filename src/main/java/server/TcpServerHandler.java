@@ -1,8 +1,6 @@
 package server;
 
-import com.sun.org.apache.xpath.internal.operations.String;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import util.ConvertCode;
@@ -47,6 +45,7 @@ public class TcpServerHandler extends SimpleChannelInboundHandler<Object> {
             WarehouseService warehouseService = new WarehouseServiceImpl();
             warehouseService.add("1", channel);
             System.out.println(s);
+            warehouseService.send("1","68");
         } catch (Exception e) {
             e.printStackTrace();
         }

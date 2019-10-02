@@ -1,11 +1,12 @@
 package client;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import util.ConvertCode;
 
-import java.time.LocalDateTime;
 
 /**
  * @ClassName MyClientHandler
@@ -27,15 +28,26 @@ public class MyClientHandler extends SimpleChannelInboundHandler<Object> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        //客户端发送过来的是字符串
         String massage = "680101000000220819200000";
-        String s = ConvertCode.hexString2String(massage);
-        ctx.writeAndFlush(s);
-        massage = "68010100000022081920";
-        s = ConvertCode.hexString2String(massage);
-        ctx.writeAndFlush(s);
-        massage = "6801010000002208";
-        s = ConvertCode.hexString2String(massage);
-        ctx.writeAndFlush(s);
+//        String s = ConvertCode.hexString2String(massage);
+//        ctx.writeAndFlush(s);
+        byte[] bytes = ConvertCode.hexString2Bytes(massage);
+        ByteBuf byteBuf = ctx.channel().alloc().buffer(bytes.length);
+        byteBuf.writeBytes(bytes);
+        ctx.writeAndFlush(byteBuf).addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future)
+                    throws Exception {
+                System.out.println("下发成功～！");
+            }
+        });
+//        massage = "68010100000022081920";
+//        s = ConvertCode.hexString2String(massage);
+//        ctx.writeAndFlush(s);
+//        massage = "6801010000002208";
+//        s = ConvertCode.hexString2String(massage);
+//        ctx.writeAndFlush(s);
     }
 
     @Override

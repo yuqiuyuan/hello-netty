@@ -38,6 +38,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public void send(String connectorId, String message) {
+        //服务端向客户端发送的是字节数组
         ChannelHandlerContext channel = warehouse.get(connectorId);
         try {
             byte[] bytes = ConvertCode.hexString2Bytes(message);
@@ -45,7 +46,13 @@ public class WarehouseServiceImpl implements WarehouseService {
             ByteBuf byteBuf = channel.alloc().buffer(bytes.length);
             //对接需要16进制
             byteBuf.writeBytes(bytes);
-            channel.writeAndFlush(byteBuf);
+            channel.writeAndFlush(byteBuf).addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future)
+                        throws Exception {
+                    System.out.println("下发成功～！");
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
