@@ -16,7 +16,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, String msg) {
         System.out.println(String.format("%s,%s", ctx.channel().remoteAddress(), msg));
         ctx.channel().writeAndFlush(String.format("from server: %s", UUID.randomUUID()));
     }
